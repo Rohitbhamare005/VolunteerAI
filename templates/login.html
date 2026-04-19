@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VolunteerAI</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+
+        <div class="brand">
+            <span class="logo">🔷</span>
+            VolunteerAI
+        </div>
+
+        <div class="badge">🚀 Smart Event Intelligence</div>
+
+        <h1>
+            Predict smarter <span>Plan better.</span>
+        </h1>
+
+        <p class="desc">
+            Automate volunteer planning with intelligent insights. Our AI-powered system 
+            analyzes past participation data to accurately predict turnout, helping you 
+            allocate resources efficiently and avoid last-minute shortages.
+        </p>
+
+        <p class="desc">
+            Whether you're managing college events, NGO drives, or large-scale campaigns, 
+            VolunteerAI empowers you to make smarter decisions, reduce uncertainty, and 
+            deliver perfectly organized events every time.
+        </p>
+
+        <div class="card">
+            <div class="graph"></div>
+            <div class="row"></div>
+            <div class="row small"></div>
+        </div>
+
+        <div class="features">
+            ✓ AI-based turnout prediction  
+            ✓ Smart event optimization  
+            ✓ Data-driven planning  
+            ✓ Real-time insights & analytics  
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+
+        <!-- LOGIN BOX -->
+        <div class="login-box" id="login-box">
+
+            <h1>Welcome Back 👋</h1>
+            <p>Login to manage your events smarter.</p>
+
+            <form action="/login" method="post">
+
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Enter email" required>
+                </div>
+
+                <div class="input-box">
+                    <input type="password" id="login-password" name="password" placeholder="Password" required>
+                    <span onclick="togglePassword('login-password')">👁</span>
+                </div>
+
+                <div class="options">
+                    <label><input type="checkbox"> Remember me</label>
+                    <a href="#">Forgot password?</a>
+                </div>
+
+                <button type="submit">Sign in →</button>
+
+            </form>
+
+            <div class="divider">
+                <span>OR CONTINUE WITH</span>
+            </div>
+
+            <div class="social">
+                <button class="google-btn">
+                    <img src="https://img.icons8.com/color/16/google-logo.png"/>
+                    Google
+                </button>
+            </div>
+
+            <p class="signup">
+                Don't have an account? 
+                <span onclick="showSignup()">Sign up</span>
+            </p>
+
+        </div>
+
+        <!-- SIGNUP BOX -->
+        <div class="login-box" id="signup-box" style="display: none;">
+
+            <h1>Create an Account</h1>
+            <p>Start managing your events smarter.</p>
+
+            <form action="/signup" method="post">
+
+                <div class="input-box">
+                    <input type="text" name="name" placeholder="Full Name" required>
+                </div>
+
+                <div class="input-box">
+                    <input type="text" name="company" placeholder="Company Name">
+                </div>
+
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Enter email" required>
+                </div>
+
+                <div class="input-box">
+                    <input type="password" id="signup-password" name="password" placeholder="Password" required>
+                    <span onclick="togglePassword('signup-password')">👁</span>
+                </div>
+
+                <button type="submit">Sign up →</button>
+
+            </form>
+
+            <p class="signup">
+                Already have an account? 
+                <span onclick="showLogin()">Login</span>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function togglePassword(id) {
+    let pass = document.getElementById(id);
+    pass.type = pass.type === "password" ? "text" : "password";
+}
+
+function showSignup() {
+    document.getElementById("login-box").style.display = "none";
+    document.getElementById("signup-box").style.display = "block";
+}
+
+function showLogin() {
+    document.getElementById("signup-box").style.display = "none";
+    document.getElementById("login-box").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>

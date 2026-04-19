@@ -1,0 +1,263 @@
+/* GLOBAL */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+}
+
+/* LAYOUT */
+.dashboard {
+    display: flex;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    /* PREMIUM GLASS EFFECT */
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(14px);
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+/* TOP BOX */
+.sidebar-top {
+    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    padding: 20px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.brand-box h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.brand-box p {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.welcome {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
+.sidebar-top h3 {
+    margin: 0;
+}
+
+/* MENU */
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.menu-item {
+    position: relative;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+/* HOVER EFFECT */
+.menu-item:hover {
+    background: rgba(99,102,241,0.08);
+    transform: translateX(4px);
+}
+
+/* ACTIVE ITEM */
+.menu-item.active {
+    background: rgba(99,102,241,0.15);
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+/* LEFT GRADIENT LINE */
+.menu-item.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    height: 60%;
+    width: 4px;
+    background: linear-gradient(#4f46e5, #9333ea);
+    border-radius: 10px;
+}
+
+/* PROFILE */
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.profile:hover {
+    transform: scale(1.03);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(#6d28d9, #9333ea);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.name {
+    margin: 0;
+    font-size: 14px;
+}
+
+.email {
+    margin: 0;
+    font-size: 12px;
+    color: gray;
+}
+
+/* LOGOUT BUTTON */
+.logout {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #ffe4e6;
+    color: #e11d48;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout:hover {
+    background: #fecdd3;
+    transform: translateY(-2px);
+}
+
+/* ================= MAIN CONTENT ================= */
+.main {
+    flex: 1;
+    padding: 30px;
+}
+
+/* HEADER */
+.main h1 {
+    margin-bottom: 20px;
+}
+
+/* ================= CARDS ================= */
+.cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 16px;
+    background: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin: 10px 0 0;
+}
+
+/* ================= SECTIONS ================= */
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* GRAPH */
+.graph {
+    height: 150px;
+    border-radius: 10px;
+    background: linear-gradient(to right, #93c5fd, #c4b5fd);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+td {
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+/* EVENT FORM */
+.event-form {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.event-form input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #f3f4f6;
+    outline: none;
+}
+
+/* BUTTON */
+.event-form button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right, #4f46e5, #9333ea);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.event-form button:hover {
+    transform: scale(1.05);
+}
+
+/* RESULT BOX */
+.result-box {
+    text-align: center;
+    background: linear-gradient(135deg, #e0e7ff, #f5f3ff);
+}
+
+.result-box b {
+    font-size: 22px;
+    color: #4f46e5;
+}
