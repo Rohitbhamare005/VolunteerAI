@@ -6,21 +6,16 @@ app = Flask(__name__)
 # MongoDB connection
 client = MongoClient("mongodb+srv://admin:12345@volunteerai.zt4yxsv.mongodb.net/?retryWrites=true&w=majority")
 
-# Check connection
-try:
-    client.server_info()
-    print("✅ MongoDB Connected Successfully")
-except Exception as e:
-    print("❌ MongoDB Connection Failed:", e)
-
 db = client["volunteer_db"]
 users = db["users"]
+events = db["events"]
 
+# HOME
 @app.route('/')
 def home():
     return render_template("login.html")
 
-# ✅ LOGIN
+# LOGIN
 @app.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
@@ -29,11 +24,11 @@ def login():
     user = users.find_one({"email": email, "password": password})
 
     if user:
-        return redirect('/dashboard')   # ✅ redirect added
+        return redirect('/dashboard')
     else:
         return "Invalid Email or Password ❌"
 
-# ✅ SIGNUP
+# SIGNUP
 @app.route('/signup', methods=['POST'])
 def signup():
     name = request.form['name']
@@ -41,13 +36,9 @@ def signup():
     email = request.form['email']
     password = request.form['password']
 
-    # 🔥 CHECK IF USER EXISTS
-    existing_user = users.find_one({"email": email})
-
-    if existing_user:
+    if users.find_one({"email": email}):
         return "User already exists ❌"
 
-    # INSERT NEW USER
     users.insert_one({
         "name": name,
         "company": company,
@@ -55,21 +46,48 @@ def signup():
         "password": password
     })
 
-    return redirect('/')  # go back to login
+    return redirect('/')
 
-# ✅ DASHBOARD
+# DASHBOARD
 @app.route('/dashboard')
 def dashboard():
-    return render_template("dashboard.html")
+    all_events = list(events.find())
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    total_events = len(all_events)
+    total_volunteers = sum(e.get('registered', 0) for e in all_events)
+    total_predicted = sum(e.get('predicted', 0) for e in all_events)
+    upcoming = len(all_events)
+
+    return render_template(
+        "dashboard.html",
+        total_events=total_events,
+        volunteers=total_volunteers,
+        predicted=total_predicted,
+        upcoming=upcoming,
+        events=all_events
+    )
+
+# PREDICT + STORE
 @app.route('/predict', methods=['POST'])
 def predict():
-    event_name = request.form['event_name']
-    registered = int(request.form['registered'])
+    try:
+        event_name = request.form['event_name']
+        registered = int(request.form['registered'])
 
-    # 🔥 SIMPLE PREDICTION LOGIC (for now)
-    predicted = int(registered * 0.7)
+        # simple prediction logic
+        predicted = int(registered * 0.7)
 
-    return render_template("dashboard.html", prediction=predicted)
+        events.insert_one({
+            "event_name": event_name,
+            "registered": registered,
+            "predicted": predicted
+        })
+
+    except Exception as e:
+        print("Error:", e)
+
+    return redirect('/dashboard')
+
+# RUN APP
+if __name__ == "__main__":
+    app.run(debug=True)
