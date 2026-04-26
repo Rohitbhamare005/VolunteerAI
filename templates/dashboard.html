@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
@@ -14,34 +13,28 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
 
-        <!-- TOP -->
         <div>
             <div class="sidebar-top">
-                <div class="brand-box">
-                    <h2>🔷 VolunteerAI</h2>
-                    <p>AI Event Panel</p>
-                </div>
-
+                <h2>🔷 VolunteerAI</h2>
+                <p>AI Event Panel</p>
                 <p class="welcome">Welcome back,</p>
-                <h3>Rohit</h3>
+                <h3>{{ user.name }}</h3>
             </div>
 
-            <!-- MENU -->
             <div class="menu">
-                <div class="menu-item active">🏠 <span>Overview</span></div>
-                <div class="menu-item">📊 <span>Event Analytics</span></div>
-                <div class="menu-item">📅 <span>Manage Events</span></div>
-                <div class="menu-item">🤖 <span>Predictions</span></div>
+                <div class="menu-item active" onclick="scrollToSection('top')">🏠 Overview</div>
+                <div class="menu-item" onclick="scrollToSection('graph')">📊 Analytics</div>
+                <div class="menu-item" onclick="scrollToSection('table')">📅 Events</div>
+                <div class="menu-item" onclick="scrollToSection('form')">🤖 Predictions</div>
             </div>
         </div>
 
-        <!-- FIXED BOTTOM -->
-        <div>
+        <div class="sidebar-bottom">
             <div class="profile">
-                <div class="avatar">R</div>
+                <div class="avatar">{{ user.name[0] }}</div>
                 <div>
-                    <p class="name">Rohit</p>
-                    <p class="email">rohit@gmail.com</p>
+                    <p class="name">{{ user.name }}</p>
+                    <p class="email">{{ user.email }}</p>
                 </div>
             </div>
 
@@ -53,9 +46,9 @@
     <!-- MAIN -->
     <div class="main">
 
-        <h1>Dashboard</h1>
+        <h1 id="top">Dashboard</h1>
 
-        <!-- CARDS (DYNAMIC) -->
+        <!-- CARDS -->
         <div class="cards">
             <div class="card">Total Events <h2>{{ total_events }}</h2></div>
             <div class="card">Volunteers <h2>{{ volunteers }}</h2></div>
@@ -63,33 +56,24 @@
             <div class="card">Upcoming <h2>{{ upcoming }}</h2></div>
         </div>
 
-        <!-- EVENT FORM -->
-        <div class="section">
-            <h2>Create Event & Predict Turnout</h2>
-
+        <!-- FORM -->
+        <div class="section" id="form">
+            <h2>Create Event</h2>
             <form action="/predict" method="post" class="event-form">
                 <input type="text" name="event_name" placeholder="Event Name" required>
                 <input type="number" name="registered" placeholder="Registered Volunteers" required>
-                <button type="submit">Predict Turnout 🚀</button>
+                <button type="submit">Predict 🚀</button>
             </form>
         </div>
 
-        <!-- RESULT -->
-        {% if prediction %}
-        <div class="section result-box">
-            <h2>Prediction Result</h2>
-            <p>Expected Volunteers: <b>{{ prediction }}</b></p>
-        </div>
-        {% endif %}
-
         <!-- GRAPH -->
-        <div class="section">
+        <div class="section graph-box" id="graph">
             <h2>Attendance Trend</h2>
             <canvas id="chart"></canvas>
         </div>
 
-        <!-- TABLE (DYNAMIC HISTORY) -->
-        <div class="section">
+        <!-- TABLE -->
+        <div class="section" id="table">
             <h2>Recent Events</h2>
 
             <table>
@@ -102,6 +86,12 @@
                 </thead>
 
                 <tbody>
+                    {% if events|length == 0 %}
+                    <tr>
+                        <td colspan="3" style="text-align:center;">No events yet 🚀</td>
+                    </tr>
+                    {% endif %}
+
                     {% for e in events %}
                     <tr>
                         <td>{{ e.event_name }}</td>
@@ -116,24 +106,28 @@
     </div>
 
 </div>
+
+<!-- DATA -->
 <script id="events-data" type="application/json">
 {{ events | tojson }}
 </script>
-<!-- CHART JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// ✅ Read JSON safely from HTML (NO VS Code errors)
-const eventsData = JSON.parse(
-    document.getElementById("events-data").textContent
-);
+// smooth scroll
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({
+        behavior: 'smooth'
+    });
+}
+
+const eventsData = JSON.parse(document.getElementById("events-data").textContent);
 
 const labels = eventsData.length ? eventsData.map(e => e.event_name) : ["No Data"];
 const data = eventsData.length ? eventsData.map(e => e.predicted) : [0];
 
-const ctx = document.getElementById('chart').getContext('2d');
-
-new Chart(ctx, {
+new Chart(document.getElementById('chart'), {
     type: 'line',
     data: {
         labels: labels,
@@ -143,12 +137,14 @@ new Chart(ctx, {
             borderColor: '#7c3aed',
             backgroundColor: 'rgba(124,58,237,0.2)',
             fill: true,
-            tension: 0.4,
-            pointRadius: 5
+            tension: 0.4
         }]
     },
     options: {
         responsive: true,
+        plugins: {
+            legend: { display: true }
+        },
         scales: {
             y: { beginAtZero: true }
         }

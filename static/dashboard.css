@@ -1,53 +1,82 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
-    font-family: 'Segoe UI';
+    font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #eef2ff, #f5f3ff);
 }
 
+/* 🔥 MAIN LAYOUT */
 .dashboard {
     display: flex;
 }
 
-/* SIDEBAR FIXED */
+/* 🔥 SIDEBAR (LEFT FIXED CLEAN) */
 .sidebar {
-    width: 260px;
+    width: 200px;
+    min-width: 200px;
     height: 100vh;
+
     position: fixed;
+    left: 0;
+    top: 0;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 
-    padding: 20px;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(12px);
+    padding: 15px;
+
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(18px);
+
+    border-right: 1px solid rgba(0,0,0,0.05);
 }
 
-/* MAIN SHIFT */
+/* 🔥 MAIN CONTENT */
 .main {
-    margin-left: 260px;
-    padding: 30px;
-    flex: 1;
+    margin-left: 200px;   /* 🔥 push content right */
+    padding: 25px;
+    width: 100%;
 }
 
-/* SIDEBAR TOP */
+/* 🔥 HEADER */
+h1 {
+    margin-bottom: 20px;
+}
+
+/* 🔥 SIDEBAR TOP */
 .sidebar-top {
     background: linear-gradient(135deg, #6d28d9, #9333ea);
-    padding: 20px;
-    border-radius: 20px;
+    padding: 15px;
+    border-radius: 15px;
     color: white;
 }
 
-/* MENU */
+.sidebar-top h2 {
+    font-size: 16px;
+    margin: 0;
+}
+
+.sidebar-top p {
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+/* 🔥 MENU */
 .menu {
     margin-top: 20px;
 }
 
 .menu-item {
-    padding: 12px;
-    border-radius: 10px;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-bottom: 10px;
-    transition: 0.3s;
+    margin-bottom: 6px;
+    transition: 0.2s;
 }
 
 .menu-item:hover {
@@ -56,88 +85,146 @@ body {
 
 .menu-item.active {
     background: rgba(99,102,241,0.2);
+    font-weight: 600;
 }
 
-/* PROFILE */
+/* 🔥 PROFILE FIX (NO OVERFLOW) */
+.sidebar-bottom {
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding-top: 10px;
+}
+
 .profile {
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.profile div {
+    max-width: 120px;
 }
 
 .avatar {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background: #6d28d9;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 50%;
+    font-size: 13px;
 }
 
-/* LOGOUT */
+.name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.email {
+    font-size: 11px;
+    color: gray;
+    word-break: break-word;   /* 🔥 FIX */
+}
+
+/* 🔥 LOGOUT */
 .logout {
     display: block;
+    width: 100%;
     text-align: center;
-    margin-top: 10px;
-    padding: 10px;
+    padding: 8px;
     background: #ffe4e6;
     color: #e11d48;
-    border-radius: 10px;
+    border-radius: 8px;
     text-decoration: none;
+    font-size: 13px;
 }
 
-/* CARDS */
+/* 🔥 CARDS */
 .cards {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
 
 .card {
-    flex: 1;
-    padding: 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
 }
 
-/* SECTION */
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* 🔥 SECTIONS */
 .section {
     margin-top: 20px;
-    padding: 20px;
-    background: white;
-    border-radius: 15px;
+    padding: 18px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
-/* FORM */
+/* 🔥 FORM */
 .event-form {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .event-form input {
     padding: 10px;
-    border-radius: 8px;
+    border-radius: 10px;
     border: none;
     background: #f3f4f6;
 }
 
 .event-form button {
-    padding: 10px 20px;
-    background: linear-gradient(to right, #4f46e5, #9333ea);
+    padding: 10px 18px;
+    background: linear-gradient(90deg, #6366f1, #9333ea);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-/* TABLE */
+/* 🔥 GRAPH */
+.graph-box {
+    height: 240px;
+}
+
+canvas {
+    max-height: 200px;
+}
+
+/* 🔥 TABLE */
 table {
     width: 100%;
     margin-top: 10px;
+    font-size: 14px;
 }
 
 td, th {
     padding: 10px;
     border-bottom: 1px solid #eee;
+}
+
+/* 🔥 RESPONSIVE */
+@media (max-width: 900px) {
+    .sidebar {
+        width: 160px;
+    }
+
+    .main {
+        margin-left: 160px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
 }
