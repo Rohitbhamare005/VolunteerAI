@@ -55,7 +55,7 @@ def signup():
         "password": password
     })
 
-    return redirect('/')  # go back to login
+    return redirect('/dashboard')  # go back to login
 
 # ✅ DASHBOARD
 @app.route('/dashboard')
