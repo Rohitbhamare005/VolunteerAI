@@ -1,13 +1,9 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect
 from pymongo import MongoClient
-import bcrypt
 
 app = Flask(__name__)
 
-# 🔐 Secret key for session
-app.secret_key = "secret123"
-
-# 🌐 MongoDB connection
+# MongoDB connection
 client = MongoClient("mongodb+srv://admin:12345@volunteerai.zt4yxsv.mongodb.net/?retryWrites=true&w=majority")
 
 # Check connection
@@ -20,26 +16,24 @@ except Exception as e:
 db = client["volunteer_db"]
 users = db["users"]
 
-# 🏠 HOME (LOGIN PAGE)
 @app.route('/')
 def home():
     return render_template("login.html")
 
-# 🔑 LOGIN
+# ✅ LOGIN
 @app.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
     password = request.form['password']
 
-    user = users.find_one({"email": email})
+    user = users.find_one({"email": email, "password": password})
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        session['user'] = email
-        return redirect('/dashboard')
+    if user:
+        return redirect('/dashboard')   # ✅ redirect added
     else:
         return "Invalid Email or Password ❌"
 
-# 📝 SIGNUP
+# ✅ SIGNUP
 @app.route('/signup', methods=['POST'])
 def signup():
     name = request.form['name']
@@ -47,58 +41,35 @@ def signup():
     email = request.form['email']
     password = request.form['password']
 
-    # Check if user exists
+    # 🔥 CHECK IF USER EXISTS
     existing_user = users.find_one({"email": email})
 
     if existing_user:
         return "User already exists ❌"
 
-    # 🔐 Hash password
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-    # Insert user
+    # INSERT NEW USER
     users.insert_one({
         "name": name,
         "company": company,
         "email": email,
-        "password": hashed_password
+        "password": password
     })
 
-    return redirect('/')
+    return redirect('/')  # go back to login
 
-# 📊 DASHBOARD
+# ✅ DASHBOARD
 @app.route('/dashboard')
 def dashboard():
-    if 'user' not in session:
-        return redirect('/')
-
     return render_template("dashboard.html")
 
-# 🤖 PREDICTION
+if __name__ == "__main__":
+    app.run(debug=True)
 @app.route('/predict', methods=['POST'])
 def predict():
-    if 'user' not in session:
-        return redirect('/')
-
     event_name = request.form['event_name']
     registered = int(request.form['registered'])
 
-    # 🔥 Improved logic
-    if registered < 50:
-        predicted = int(registered * 0.6)
-    elif registered < 200:
-        predicted = int(registered * 0.7)
-    else:
-        predicted = int(registered * 0.8)
+    # 🔥 SIMPLE PREDICTION LOGIC (for now)
+    predicted = int(registered * 0.7)
 
-    return render_template("dashboard.html", prediction=predicted, event=event_name)
-
-# 🚪 LOGOUT
-@app.route('/logout')
-def logout():
-    session.pop('user', None)
-    return redirect('/')
-
-# ▶️ RUN APP
-if __name__ == "__main__":
-    app.run(debug=True)
+    return render_template("dashboard.html", prediction=predicted)
