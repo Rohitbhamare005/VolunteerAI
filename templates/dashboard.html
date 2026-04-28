@@ -59,8 +59,10 @@
         <!-- FORM -->
         <div class="section" id="form">
             <h2>Create Event</h2>
+
             <form action="/predict" method="post" class="event-form">
                 <input type="text" name="event_name" placeholder="Event Name" required>
+                <input type="date" name="event_date" required>
                 <input type="number" name="registered" placeholder="Registered Volunteers" required>
                 <button type="submit">Predict 🚀</button>
             </form>
@@ -80,6 +82,7 @@
                 <thead>
                     <tr>
                         <th>Event</th>
+                        <th>Date</th>
                         <th>Registered</th>
                         <th>Predicted</th>
                     </tr>
@@ -88,13 +91,14 @@
                 <tbody>
                     {% if events|length == 0 %}
                     <tr>
-                        <td colspan="3" style="text-align:center;">No events yet 🚀</td>
+                        <td colspan="4" style="text-align:center;">No events yet 🚀</td>
                     </tr>
                     {% endif %}
 
                     {% for e in events %}
                     <tr>
                         <td>{{ e.event_name }}</td>
+                        <td>{{ e.event_date }}</td>
                         <td>{{ e.registered }}</td>
                         <td>{{ e.predicted }}</td>
                     </tr>
@@ -115,17 +119,19 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-// smooth scroll
 function scrollToSection(id) {
-    document.getElementById(id).scrollIntoView({
-        behavior: 'smooth'
-    });
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
 }
 
 const eventsData = JSON.parse(document.getElementById("events-data").textContent);
 
-const labels = eventsData.length ? eventsData.map(e => e.event_name) : ["No Data"];
-const data = eventsData.length ? eventsData.map(e => e.predicted) : [0];
+const labels = eventsData.length
+    ? eventsData.map(e => e.event_name)
+    : ["No Data"];
+
+const data = eventsData.length
+    ? eventsData.map(e => e.predicted || 0)
+    : [0];
 
 new Chart(document.getElementById('chart'), {
     type: 'line',
@@ -142,9 +148,7 @@ new Chart(document.getElementById('chart'), {
     },
     options: {
         responsive: true,
-        plugins: {
-            legend: { display: true }
-        },
+        maintainAspectRatio: false,
         scales: {
             y: { beginAtZero: true }
         }

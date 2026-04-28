@@ -2,12 +2,13 @@ from flask import Flask, render_template, request, redirect, session
 from pymongo import MongoClient
 import numpy as np
 from sklearn.linear_model import LinearRegression
+from datetime import datetime
+
 app = Flask(__name__)
 app.secret_key = "secret123"
 
 # MongoDB
 client = MongoClient("mongodb+srv://admin:12345@volunteerai.zt4yxsv.mongodb.net/?retryWrites=true&w=majority")
-
 db = client["volunteer_db"]
 users = db["users"]
 events = db["events"]
@@ -51,39 +52,10 @@ def signup():
 
     return redirect('/')
 
-# DASHBOARD
-@app.route('/dashboard')
-def dashboard():
-    if 'user_email' not in session:
-        return redirect('/')
-
-    user = users.find_one({"email": session['user_email']})
-
-    all_events = list(events.find({"user_email": session['user_email']}))
-
-    # 🔥 FIX: Convert ObjectId → string
-    for event in all_events:
-        event["_id"] = str(event["_id"])
-
-    total_events = len(all_events)
-    total_volunteers = sum(e.get('registered', 0) for e in all_events)
-    total_predicted = sum(e.get('predicted', 0) for e in all_events)
-    upcoming = len(all_events)
-
-    return render_template(
-        "dashboard.html",
-        user=user,
-        total_events=total_events,
-        volunteers=total_volunteers,
-        predicted=total_predicted,
-        upcoming=upcoming,
-        events=all_events
-    )
-# PREDICT
+# AI MODEL
 def predict_turnout(registered):
     past_events = list(events.find())
 
-    # Need at least 2 data points
     if len(past_events) < 2:
         return int(registered * 0.7)
 
@@ -95,38 +67,65 @@ def predict_turnout(registered):
             X.append([e["registered"]])
             y.append(e["predicted"])
 
-    X = np.array(X)
-    y = np.array(y)
-
     model = LinearRegression()
     model.fit(X, y)
 
-    prediction = model.predict([[registered]])
+    return int(model.predict([[registered]])[0])
 
-    return int(prediction[0])
+# DASHBOARD
+@app.route('/dashboard')
+def dashboard():
+    if 'user_email' not in session:
+        return redirect('/')
+
+    user = users.find_one({"email": session['user_email']})
+    all_events = list(events.find({"user_email": session['user_email']}))
+
+    for event in all_events:
+        event["_id"] = str(event["_id"])
+
+    total_events = len(all_events)
+    total_volunteers = sum(e.get('registered', 0) for e in all_events)
+    total_predicted = sum(e.get('predicted', 0) for e in all_events)
+
+    today = datetime.today().strftime('%Y-%m-%d')
+    upcoming = sum(
+        1 for e in all_events
+        if e.get('event_date') and e['event_date'] >= today
+    )
+
+    return render_template(
+        "dashboard.html",
+        user=user,
+        total_events=total_events,
+        volunteers=total_volunteers,
+        predicted=total_predicted,
+        upcoming=upcoming,
+        events=all_events
+    )
+
+# PREDICT
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'user_email' not in session:
         return redirect('/')
 
-    try:
-        event_name = request.form['event_name']
-        registered = int(request.form['registered'])
+    event_name = request.form['event_name']
+    event_date = request.form['event_date']
+    registered = int(request.form['registered'])
 
-        # 🔥 AI prediction
-        predicted = predict_turnout(registered)
+    predicted = predict_turnout(registered)
 
-        events.insert_one({
-            "event_name": event_name,
-            "registered": registered,
-            "predicted": predicted,
-            "user_email": session['user_email']
-        })
-
-    except Exception as e:
-        print("Error:", e)
+    events.insert_one({
+        "event_name": event_name,
+        "event_date": event_date,
+        "registered": registered,
+        "predicted": predicted,
+        "user_email": session['user_email']
+    })
 
     return redirect('/dashboard')
+
 # LOGOUT
 @app.route('/logout')
 def logout():

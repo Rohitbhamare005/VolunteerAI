@@ -8,17 +8,15 @@ body {
     background: linear-gradient(135deg, #eef2ff, #f5f3ff);
 }
 
-/* 🔥 MAIN LAYOUT */
+/* 🔥 LAYOUT */
 .dashboard {
     display: flex;
 }
 
-/* 🔥 SIDEBAR (LEFT FIXED CLEAN) */
+/* 🔥 SIDEBAR (PERFECT FIXED LEFT) */
 .sidebar {
     width: 200px;
-    min-width: 200px;
     height: 100vh;
-
     position: fixed;
     left: 0;
     top: 0;
@@ -31,13 +29,12 @@ body {
 
     background: rgba(255,255,255,0.75);
     backdrop-filter: blur(18px);
-
     border-right: 1px solid rgba(0,0,0,0.05);
 }
 
 /* 🔥 MAIN CONTENT */
 .main {
-    margin-left: 200px;   /* 🔥 push content right */
+    margin-left: 200px;
     padding: 25px;
     width: 100%;
 }
@@ -88,7 +85,7 @@ h1 {
     font-weight: 600;
 }
 
-/* 🔥 PROFILE FIX (NO OVERFLOW) */
+/* 🔥 PROFILE (FIXED OVERFLOW ISSUE) */
 .sidebar-bottom {
     border-top: 1px solid rgba(0,0,0,0.05);
     padding-top: 10px;
@@ -125,7 +122,7 @@ h1 {
 .email {
     font-size: 11px;
     color: gray;
-    word-break: break-word;   /* 🔥 FIX */
+    word-break: break-word; /* 🔥 prevents overflow */
 }
 
 /* 🔥 LOGOUT */
@@ -193,14 +190,17 @@ h1 {
     cursor: pointer;
 }
 
-/* 🔥 GRAPH */
+/* 🔥 GRAPH (FIXED PROPERLY) */
 .graph-box {
-    height: 240px;
+    height: 300px;
 }
 
-canvas {
-    max-height: 200px;
+#chart {
+    width: 100% !important;
+    height: 100% !important;
 }
+
+/* ❌ REMOVED max-height BUG */
 
 /* 🔥 TABLE */
 table {
