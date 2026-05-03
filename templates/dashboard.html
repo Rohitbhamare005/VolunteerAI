@@ -215,64 +215,305 @@
                     </div>
                 </div>
 
-                <!-- Create Event Form -->
-                <div class="panel" id="form" style="animation-delay:0.3s">
-                    <div class="panel-header">
-                        <div>
-                            <div class="panel-title">Create Event</div>
-                            <div class="panel-sub">Add & predict new event turnout</div>
+                <!-- Create Event Form — full width below -->
+            </div>
+
+            <!-- ── CREATE EVENT FORM (full width) ── -->
+            <div class="panel full-panel" id="form" style="animation-delay:0.3s">
+                <div class="panel-header">
+                    <div>
+                        <div class="panel-title">Create & Predict Event</div>
+                        <div class="panel-sub">Multi-factor AI turnout prediction</div>
+                    </div>
+                    <div class="panel-tag" style="color:var(--accent2);background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.2);">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        AI-Powered
+                    </div>
+                </div>
+
+                <form action="/predict" method="post" class="event-form">
+
+                    <!-- ── SECTION 1: Core Details ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">📋</span>
+                                Core Event Details
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                         </div>
-                        <div class="panel-icon-btn">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <div class="form-section-body open">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Event Name</label>
+                                    <input type="text" name="event_name" placeholder="e.g. TechFest 2026" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Event Date</label>
+                                    <input type="date" name="event_date" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Event Type</label>
+                                    <select name="event_type" required>
+                                        <option value="">Select type</option>
+                                        <option value="0">🎉 Social / Fun</option>
+                                        <option value="1">🏢 Formal / Laborious</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Event Time</label>
+                                    <select name="event_time" required>
+                                        <option value="">Select time</option>
+                                        <option value="0">🌅 Morning</option>
+                                        <option value="1">☀️ Afternoon</option>
+                                        <option value="2">🌙 Evening</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Day of Week</label>
+                                    <select name="day_of_week">
+                                        <option value="1">📅 Weekend</option>
+                                        <option value="0">💼 Weekday</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Duration</label>
+                                    <select name="duration_hours">
+                                        <option value="0">⚡ Short (&lt;3 hrs)</option>
+                                        <option value="1" selected>🕐 Medium (3–6 hrs)</option>
+                                        <option value="2">⏳ Long (&gt;6 hrs)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Registered Volunteers</label>
+                                <input type="number" name="registered" placeholder="e.g. 150" required min="1">
+                            </div>
                         </div>
                     </div>
 
-                    <form action="/predict" method="post" class="event-form">
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Event Name</label>
-                                <input type="text" name="event_name" placeholder="e.g. TechFest 2026" required>
+                    <!-- ── SECTION 2: Personal / Volunteer Factors ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">🧑‍🤝‍🧑</span>
+                                Personal &amp; Volunteer Factors
                             </div>
-                            <div class="form-group">
-                                <label>Event Date</label>
-                                <input type="date" name="event_date" required>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Average Volunteer Age Group</label>
+                                    <select name="avg_age">
+                                        <option value="0">👧 Young (&lt;25 yrs)</option>
+                                        <option value="1" selected>🧑 Mid (25–40 yrs)</option>
+                                        <option value="2">👴 Senior (40+)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Primary Motivation</label>
+                                    <select name="motivation">
+                                        <option value="0" selected>❤️ Intrinsic (passion)</option>
+                                        <option value="1">📜 Extrinsic (certificate/resume)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Explicit Confirmation Rate (%)</label>
+                                    <input type="number" name="confirmation_rate" placeholder="e.g. 60" min="0" max="100" value="60">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last-Minute Registrants (%)</label>
+                                    <input type="number" name="last_minute_pct" placeholder="e.g. 20" min="0" max="100" value="20">
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Historical Show-Up Rate for this Audience (%)</label>
+                                <input type="number" name="past_attendance" placeholder="e.g. 70" min="0" max="100" value="70">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Event Type</label>
-                                <select name="event_type" required>
-                                    <option value="">Select type</option>
-                                    <option value="0">🎉 Social</option>
-                                    <option value="1">🏢 Formal</option>
+                    <!-- ── SECTION 3: Weather & Season ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">🌦️</span>
+                                Weather &amp; Season
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Weather Forecast</label>
+                                    <select name="weather">
+                                        <option value="0" selected>☀️ Clear / Sunny</option>
+                                        <option value="1">⛅ Cloudy / Overcast</option>
+                                        <option value="2">🌧️ Rain / Storm</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Season</label>
+                                    <select name="season">
+                                        <option value="0" selected>🌸 Spring</option>
+                                        <option value="1">🌞 Summer</option>
+                                        <option value="2">🌧️ Monsoon</option>
+                                        <option value="3">❄️ Winter</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── SECTION 4: Location & Distance ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">📍</span>
+                                Location &amp; Distance
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Average Travel Distance (km)</label>
+                                    <input type="number" name="distance_km" placeholder="e.g. 10" min="0" value="10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Location Type</label>
+                                    <select name="location_type">
+                                        <option value="0" selected>🏙️ Urban</option>
+                                        <option value="1">🏘️ Suburban</option>
+                                        <option value="2">🌾 Rural</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Public Transport Available?</label>
+                                <select name="transport_available">
+                                    <option value="1" selected>✅ Yes — easily reachable</option>
+                                    <option value="0">❌ No — volunteers need own transport</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Event Time</label>
-                                <select name="event_time" required>
-                                    <option value="">Select time</option>
-                                    <option value="0">🌅 Morning</option>
-                                    <option value="1">☀️ Afternoon</option>
-                                    <option value="2">🌙 Evening</option>
-                                </select>
+                        </div>
+                    </div>
+
+                    <!-- ── SECTION 5: Safety & Conflicts ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">🔒</span>
+                                Safety &amp; Conflicts
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Perceived Safety of Venue</label>
+                                    <select name="safety_rating">
+                                        <option value="0">⚠️ Low</option>
+                                        <option value="1" selected>🛡️ Medium</option>
+                                        <option value="2">✅ High</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Conflicting Events / Holidays</label>
+                                    <select name="conflicting_events">
+                                        <option value="0" selected>✅ None</option>
+                                        <option value="1">⚠️ Minor (small event nearby)</option>
+                                        <option value="2">🚫 Major (exam / major festival)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-group full">
-                            <label>Registered Volunteers</label>
-                            <input type="number" name="registered" placeholder="e.g. 150" required>
+                    <!-- ── SECTION 6: Communication & Engagement ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">📣</span>
+                                Communication &amp; Engagement
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
                         </div>
+                        <div class="form-section-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Reminders Sent</label>
+                                    <select name="reminders_sent">
+                                        <option value="0">0 — No reminders</option>
+                                        <option value="1" selected>1 — One reminder</option>
+                                        <option value="2">2 — Two reminders</option>
+                                        <option value="3">3+ — Regular follow-ups</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Reminder Response Rate (%)</label>
+                                    <input type="number" name="response_rate" placeholder="e.g. 50" min="0" max="100" value="50">
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Social Influence — Volunteers with Friends Also Registered (%)</label>
+                                <input type="number" name="social_influence" placeholder="e.g. 30" min="0" max="100" value="30">
+                            </div>
+                        </div>
+                    </div>
 
-                        <button type="submit" class="predict-btn">
-                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            Predict Turnout
-                        </button>
+                    <!-- ── SECTION 7: Organizational Factors ── -->
+                    <div class="form-section">
+                        <div class="form-section-header" onclick="toggleSection(this)">
+                            <div class="form-section-title">
+                                <span class="form-section-icon">🏛️</span>
+                                Organizational Factors
+                            </div>
+                            <svg class="chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                        <div class="form-section-body">
+                            <div class="form-group full">
+                                <label>Organization Reputation</label>
+                                <select name="org_reputation">
+                                    <option value="0">⚠️ Low — First-time / unknown org</option>
+                                    <option value="1" selected>🏢 Medium — Established org</option>
+                                    <option value="2">⭐ High — Well-known, trusted org</option>
+                                </select>
+                            </div>
+                            <div class="form-group full">
+                                <label>Perks Provided to Volunteers</label>
+                                <div class="perks-grid">
+                                    <label class="perk-check">
+                                        <input type="checkbox" name="perk_food" value="1" onchange="updatePerks()">
+                                        <span class="perk-box">🍱 Food</span>
+                                    </label>
+                                    <label class="perk-check">
+                                        <input type="checkbox" name="perk_transport" value="1" onchange="updatePerks()">
+                                        <span class="perk-box">🚌 Transport</span>
+                                    </label>
+                                    <label class="perk-check">
+                                        <input type="checkbox" name="perk_certificate" value="1" onchange="updatePerks()">
+                                        <span class="perk-box">📜 Certificate</span>
+                                    </label>
+                                </div>
+                                <input type="hidden" name="perks" id="perks-hidden" value="0">
+                            </div>
+                        </div>
+                    </div>
 
-                    </form>
-                </div>
+                    <button type="submit" class="predict-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        Predict Turnout
+                    </button>
 
+                </form>
             </div>
 
             <!-- ── EVENTS TABLE ── -->
@@ -294,13 +535,14 @@
                                 <th>Registered</th>
                                 <th>Predicted</th>
                                 <th>Turnout Rate</th>
+                                <th>AI Score</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% if events|length == 0 %}
                             <tr>
-                                <td colspan="6" class="empty-row">
+                                <td colspan="7" class="empty-row">
                                     <div class="empty-state">
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                         <span>No events yet — create your first event above</span>
@@ -334,6 +576,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    {% if e.factor_score %}
+                                        <span class="factor-badge {% if e.factor_score >= 1.0 %}factor-good{% elif e.factor_score >= 0.85 %}factor-mid{% else %}factor-low{% endif %}">
+                                            {{ "%.2f"|format(e.factor_score) }}×
+                                        </span>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
                                     {% if e.event_date %}
                                         <span class="badge badge-blue">Upcoming</span>
                                     {% else %}
@@ -350,7 +601,7 @@
             <!-- Footer -->
             <div class="dash-footer">
                 <span>VolunteerAI © 2026</span>
-                <span>Powered by Linear Regression ML Model</span>
+                <span>Powered by Multi-Factor AI · Linear Regression + Geometric Mean Scoring</span>
             </div>
 
         </div><!-- /content -->
@@ -384,10 +635,27 @@ function updateTime() {
 setInterval(updateTime, 1000);
 updateTime();
 
+/* Collapsible form sections */
+function toggleSection(header) {
+    const body = header.nextElementSibling;
+    const chevron = header.querySelector('.chevron');
+    body.classList.toggle('open');
+    chevron.style.transform = body.classList.contains('open') ? 'rotate(0deg)' : 'rotate(-90deg)';
+}
+
+/* Perks bitmask */
+function updatePerks() {
+    let val = 0;
+    if (document.querySelector('[name=perk_food]').checked)        val |= 1;
+    if (document.querySelector('[name=perk_transport]').checked)   val |= 2;
+    if (document.querySelector('[name=perk_certificate]').checked) val |= 4;
+    document.getElementById('perks-hidden').value = val;
+}
+
 /* Safe JSON parse */
 const eventsData = JSON.parse(document.getElementById("events-data").textContent);
 
-const labels = eventsData.length ? eventsData.map(e => e.event_name) : ["No Data"];
+const labels   = eventsData.length ? eventsData.map(e => e.event_name) : ["No Data"];
 const predData = eventsData.length ? eventsData.map(e => e.predicted || 0) : [0];
 const regData  = eventsData.length ? eventsData.map(e => e.registered || 0) : [0];
 
