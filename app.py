@@ -7,18 +7,19 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "secret123"
 
-# MongoDB
+# ================= DB =================
 client = MongoClient("mongodb+srv://admin:12345@volunteerai.zt4yxsv.mongodb.net/?retryWrites=true&w=majority")
 db = client["volunteer_db"]
+
 users = db["users"]
 events = db["events"]
 
-# HOME
+# ================= HOME =================
 @app.route('/')
 def home():
     return render_template("login.html")
 
-# LOGIN
+# ================= LOGIN =================
 @app.route('/login', methods=['POST'])
 def login():
     email = request.form['email']
@@ -29,10 +30,9 @@ def login():
     if user:
         session['user_email'] = email
         return redirect('/dashboard')
-    else:
-        return "Invalid Email or Password ❌"
+    return "Invalid Email or Password ❌"
 
-# SIGNUP
+# ================= SIGNUP =================
 @app.route('/signup', methods=['POST'])
 def signup():
     name = request.form['name']
@@ -52,7 +52,7 @@ def signup():
 
     return redirect('/')
 
-# AI MODEL
+# ================= MODEL =================
 def predict_turnout(registered):
     past_events = list(events.find())
 
@@ -67,12 +67,17 @@ def predict_turnout(registered):
             X.append([e["registered"]])
             y.append(e["predicted"])
 
+    if len(X) < 2:
+        return int(registered * 0.7)
+
     model = LinearRegression()
     model.fit(X, y)
 
-    return int(model.predict([[registered]])[0])
+    prediction = model.predict([[registered]])
 
-# DASHBOARD
+    return int(prediction[0])
+
+# ================= DASHBOARD =================
 @app.route('/dashboard')
 def dashboard():
     if 'user_email' not in session:
@@ -81,8 +86,8 @@ def dashboard():
     user = users.find_one({"email": session['user_email']})
     all_events = list(events.find({"user_email": session['user_email']}))
 
-    for event in all_events:
-        event["_id"] = str(event["_id"])
+    for e in all_events:
+        e["_id"] = str(e["_id"])
 
     total_events = len(all_events)
     total_volunteers = sum(e.get('registered', 0) for e in all_events)
@@ -104,34 +109,42 @@ def dashboard():
         events=all_events
     )
 
-# PREDICT
+# ================= PREDICT =================
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'user_email' not in session:
         return redirect('/')
 
-    event_name = request.form['event_name']
-    event_date = request.form['event_date']
-    registered = int(request.form['registered'])
+    try:
+        event_name = request.form['event_name']
+        event_date = request.form['event_date']
+        event_type = int(request.form['event_type'])
+        event_time = int(request.form['event_time'])
+        registered = int(request.form['registered'])
 
-    predicted = predict_turnout(registered)
+        predicted = predict_turnout(registered)
 
-    events.insert_one({
-        "event_name": event_name,
-        "event_date": event_date,
-        "registered": registered,
-        "predicted": predicted,
-        "user_email": session['user_email']
-    })
+        events.insert_one({
+            "event_name": event_name,
+            "event_date": event_date,
+            "event_type": event_type,
+            "event_time": event_time,
+            "registered": registered,
+            "predicted": predicted,
+            "user_email": session['user_email']
+        })
+
+    except Exception as e:
+        print("Error:", e)
 
     return redirect('/dashboard')
 
-# LOGOUT
+# ================= LOGOUT =================
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
 
-# RUN
+# ================= RUN =================
 if __name__ == "__main__":
     app.run(debug=True)
