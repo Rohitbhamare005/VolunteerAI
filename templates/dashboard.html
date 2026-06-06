@@ -534,15 +534,18 @@
                                 <th>Date</th>
                                 <th>Registered</th>
                                 <th>Predicted</th>
+                                <th>Actual Turnout</th>
+                                <th>Prediction Error</th>
                                 <th>Turnout Rate</th>
                                 <th>AI Score</th>
                                 <th>Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% if events|length == 0 %}
                             <tr>
-                                <td colspan="7" class="empty-row">
+                                <td colspan="10" class="empty-row">
                                     <div class="empty-state">
                                         <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                         <span>No events yet — create your first event above</span>
@@ -562,12 +565,39 @@
                                 <td class="date-cell">{{ e.event_date if e.event_date else '—' }}</td>
                                 <td><span class="num-cell">{{ e.registered }}</span></td>
                                 <td><span class="num-cell accent">{{ e.predicted }}</span></td>
+
+                                <!-- Actual Turnout -->
+                                <td>
+                                    {% if e.get('actual_turnout') is not none %}
+                                        <span class="num-cell">{{ e.get('actual_turnout') }}</span>
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Prediction Error -->
+                                <td>
+                                    {% if e.get('actual_turnout') is not none and e.predicted %}
+                                        {% set err = e.predicted - e.get('actual_turnout', 0) %}
+                                        {% if err > 0 %}
+                                            <span class="stat-change" style="color:#f87171;">+{{ err }}</span>
+                                        {% elif err < 0 %}
+                                            <span class="stat-change" style="color:#22d3a0;">{{ err }}</span>
+                                        {% else %}
+                                            <span class="stat-change" style="color:#7b80a0;">0</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Turnout Rate -->
                                 <td>
                                     {% if e.registered and e.predicted %}
                                         {% set rate = ((e.predicted / e.registered) * 100) | int %}
                                         <div class="rate-cell">
                                             <div class="mini-bar">
-                                                <div class="mini-fill" style="width:{{ rate }}%"></div>
+                                                <div class="mini-fill" style="width: {{ rate }} %"></div>
                                             </div>
                                             <span>{{ rate }}%</span>
                                         </div>
@@ -575,6 +605,8 @@
                                         <span class="muted">—</span>
                                     {% endif %}
                                 </td>
+
+                                <!-- AI Score -->
                                 <td>
                                     {% if e.factor_score %}
                                         <span class="factor-badge {% if e.factor_score >= 1.0 %}factor-good{% elif e.factor_score >= 0.85 %}factor-mid{% else %}factor-low{% endif %}">
@@ -584,13 +616,41 @@
                                         <span class="muted">—</span>
                                     {% endif %}
                                 </td>
+
+                                <!-- Status -->
                                 <td>
-                                    {% if e.event_date %}
-                                        <span class="badge badge-blue">Upcoming</span>
-                                    {% else %}
+                                    {% if e.get('actual_turnout') is not none %}
                                         <span class="badge badge-green">Completed</span>
+                                    {% else %}
+                                        <span class="badge badge-blue">Pending</span>
                                     {% endif %}
                                 </td>
+
+                                <!-- Action -->
+                                <td>
+                                    {% if e.get('actual_turnout') is not none %}
+                                        <button class="outline-btn" disabled style="opacity:0.45;cursor:not-allowed;font-size:0.75rem;padding:4px 10px;">
+                                            ✓ Saved
+                                        </button>
+                                    {% else %}
+                                        <form action="/actual/{{ e._id }}" method="post" style="display:flex;align-items:center;gap:6px;">
+                                            <input
+                                                type="number"
+                                                name="actual_turnout"
+                                                min="0"
+                                                max="{{ e.registered }}"
+                                                required
+                                                placeholder="Actual"
+                                                style="width:72px;padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:var(--text-primary, #e8eaf6);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;"
+                                            >
+                                            <button type="submit" class="predict-btn" style="padding:4px 12px;font-size:0.75rem;gap:4px;">
+                                                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                                Save
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -601,7 +661,7 @@
             <!-- Footer -->
             <div class="dash-footer">
                 <span>VolunteerAI © 2026</span>
-                <span>Powered by Multi-Factor AI · Linear Regression + Geometric Mean Scoring</span>
+                <span>Powered by Random Forest Machine Learning · Continuous Self-Learning</span>
             </div>
 
         </div><!-- /content -->

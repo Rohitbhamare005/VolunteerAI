@@ -17,10 +17,14 @@ users = db["users"]
 events = db["events"]
 
 MODEL_PATH = "model.pkl"
-
+MODEL_CACHE = None
 # ================= HELPER =================
 def get_trained_events():
-    return [e for e in events.find() if "actual_turnout" in e and "registered" in e]
+    return [
+        e for e in events.find()
+        if e.get("actual_turnout") is not None
+        and e.get("registered") is not None
+    ]
 
 # ================= FEATURE VECTOR =================
 def build_feature_vector(data):
@@ -57,10 +61,11 @@ def build_feature_vector(data):
     ]
 
 # ================= TRAIN MODEL =================
+
 def train_model():
     past = get_trained_events()
 
-    if len(past) < 20:
+    if len(past) < 5:
         return None
 
     X, y = [], []
@@ -68,21 +73,36 @@ def train_model():
     for e in past:
         try:
             X.append(build_feature_vector(e))
-            y.append(e['actual_turnout'])
+            y.append(int(e['actual_turnout']))
         except:
             continue
 
-    model = RandomForestRegressor(n_estimators=200, random_state=42)
+    if len(X) < 5:
+        return None
+
+    model = RandomForestRegressor(
+        n_estimators=200,
+        random_state=42
+    )
+
     model.fit(X, y)
 
     joblib.dump(model, MODEL_PATH)
-    return model
 
+    return model
 # ================= LOAD MODEL =================
 def load_model():
+    global MODEL_CACHE
+
+    if MODEL_CACHE:
+        return MODEL_CACHE
+
     if os.path.exists(MODEL_PATH):
-        return joblib.load(MODEL_PATH)
-    return train_model()
+        MODEL_CACHE = joblib.load(MODEL_PATH)
+        return MODEL_CACHE
+
+    MODEL_CACHE = train_model()
+    return MODEL_CACHE
 
 # ================= PREDICT =================
 def predict_turnout(data):
@@ -106,15 +126,17 @@ def calculate_accuracy():
         return None
 
     errors = []
+
     for e in past:
-        actual = e.get('actual_turnout', 0)
-        pred = e.get('predicted', 0)
+        actual = int(e.get('actual_turnout', 0))
+        pred = int(e.get('predicted', 0))
 
         if actual > 0:
             errors.append(abs(pred - actual) / actual)
 
     if errors:
         return round((1 - np.mean(errors)) * 100, 2)
+
     return None
 
 # ================= ROUTES =================
@@ -155,7 +177,11 @@ def dashboard():
         return redirect('/')
 
     user = users.find_one({"email": session['user_email']})
-    all_events = list(events.find({"user_email": session['user_email']}))
+    all_events = list(
+    events.find(
+        {"user_email": session['user_email']}
+    ).sort("created_at", -1)
+)
 
     for e in all_events:
         e["_id"] = str(e["_id"])
@@ -197,7 +223,8 @@ def predict():
         events.insert_one({
             **data,
             "predicted": predicted,
-            "user_email": session['user_email']
+            "user_email": session['user_email'],
+            "created_at": datetime.utcnow()
         })
 
     except Exception as e:
@@ -223,13 +250,22 @@ def record_actual(event_id):
             {
                 "$set": {
                     "actual_turnout": actual,
-                    "error": abs(actual - predicted)
+                    "error": abs(actual - predicted),
+                    "accuracy": round(
+                        (
+                            1 -
+                            abs(actual - predicted)
+                            / max(actual, 1)
+                        ) * 100,
+                        2
+                    )
                 }
             }
         )
 
-        # 🔥 retrain model after new data
-        train_model()
+        global MODEL_CACHE
+        MODEL_CACHE = train_model()
+
 
     except Exception as e:
         print("Actual update error:", e)

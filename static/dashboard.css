@@ -364,6 +364,32 @@ button { cursor: pointer; font-family: inherit; }
     margin-bottom: 2px;
 }
 
+.table-row form input[type="number"] {
+    transition: border-color 0.15s ease,
+                background 0.15s ease,
+                box-shadow 0.15s ease;
+}
+
+.table-row form input[type="number"]:focus {
+    border-color: var(--accent) !important;
+    background: rgba(99,102,241,0.05) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+.table-row .stat-change {
+    white-space: nowrap;
+}
+
+.table-row form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+table {
+    min-width: 1350px;
+}
+
 .topbar-breadcrumb svg { opacity: 0.5; }
 .topbar-page { color: var(--accent2); }
 
